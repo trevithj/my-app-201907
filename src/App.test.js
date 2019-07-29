@@ -1,9 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { StoreProvider } from './store';
 
-it('renders without crashing', () => {
+const reducer = (state, newState) => {
+	return {...state, ...newState};
+};
+
+const TestApp = () => (
+	<StoreProvider reducer={reducer} initialState={{}}>
+		<App />
+	</StoreProvider>
+);
+
+
+
+describe('App', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+
+	it('renders without error', () => {
+		ReactDOM.render(<TestApp />, div);
+		ReactDOM.unmountComponentAtNode(div);
+	});
+
 });

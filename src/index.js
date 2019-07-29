@@ -1,12 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { StoreProvider } from './store';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const initialState = {test: 123};
+/*
+const reducer = (state, action) => {
+  console.log(state, action);
+  const newState = {...state, actionType: action.type};
+  switch(action.type) {
+    case 'LOG': newState.msg = action.msg; return newState;
+    default: return newState;
+  }
+};
+*/
+//Version that allows dispatch() to mimic setState()
+const reducer = (state, newState) => {
+	return {...state, ...newState};
+};
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+
+ReactDOM.render((
+    <StoreProvider reducer={reducer} initialState={initialState}>
+      <App />
+    </StoreProvider>
+  ),
+  document.getElementById('root')
+);
