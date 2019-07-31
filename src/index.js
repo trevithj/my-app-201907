@@ -1,9 +1,10 @@
+//MAIN
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { StoreProvider } from './store';
 import App from './App';
 
-const initialState = {test: 123};
+const initialState = {test: 123, data: {} };
 /*
 const reducer = (state, action) => {
   console.log(state, action);

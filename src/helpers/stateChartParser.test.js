@@ -1,4 +1,6 @@
-import { asTextArray, asTriplesArray, asStateMap } from './stateChartParser';
+import * as SCP from './stateChartParser';
+
+const { asTextArray, asTriplesArray, asStateMap, asKumuJson } = SCP;
 
 describe('asTextArray', () => {
   const testDef = `Line One\n   \nLine Two\ntrailing-spaces   \n  indented`;
@@ -94,7 +96,36 @@ describe('asStateMap', () => {
   });
 });
 
+describe('asKumuJson', () => {
+  const makeTriple = (source, transition, target) => ({ source, target, transition});
 
+	it('should', () => {
+		const triples = [
+			makeTriple('state1', 'txtnA', 'state2'),
+			makeTriple('state1', 'txtn B', 'state3'),
+			makeTriple('state2', 'txtnC', 'state3'),
+		];
+		const json = asKumuJson(triples);
+		expect(json.elements.length).toBe(3);
+		expect(json.elements.map(node => node.label)).toEqual([
+			'state1', 'state2', 'state3'
+		]);
+		expect(json.elements.map(node => node.type)).toEqual([
+			'root', 'node', 'leaf'
+		]);
+
+		expect(json.connections.map(link => link.from)).toEqual([
+			'state1', 'state1', 'state2'
+		]);
+		expect(json.connections.map(link => link.to)).toEqual([
+			'state2', 'state3', 'state3'
+		]);
+		expect(json.connections.map(link => link.label)).toEqual([
+			'txtnA', 'txtn B', 'txtnC'
+		]);
+	});
+
+});
 /* Kumu json
 {
   "elements": [

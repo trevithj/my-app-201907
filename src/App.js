@@ -3,6 +3,10 @@ import { useStore } from './store';
 import { cancelTaxiDialogue } from './helpers/stateChartDef';
 import * as Parser from './helpers/stateChartParser';
 
+const taStyle = {
+	width: '98%', fontFamily: 'Courier new', fontSize: '12pt'
+};
+
 const App = () => {
   const [state, dispatch] = useStore();
   const taInput = useRef();
@@ -12,32 +16,59 @@ const App = () => {
   }});
   const data = state.data || {};
 
+  const handleTriplesClick = () => {
+		const output = data.triples;
+		data.output = JSON.stringify(output, null, 2);
+		dispatch({format:'triples', data});
+	};
+  const handleStateMapClick = () => {
+		const output = Parser.asStateMap(data.triples);
+		data.output = JSON.stringify(output, null, 2);
+		dispatch({format:'statemap', data});
+	};
+  const handleKumuJsonClick = () => {
+		const output = Parser.asKumuJson(data.triples);
+		data.output = JSON.stringify(output, null, 2);
+		dispatch({format:'kumu', data});
+	};
+
   useEffect(() => {
     const txt = Parser.asTextArray(cancelTaxiDialogue);
     const triples = Parser.asTriplesArray(txt);
     const data = { input: cancelTaxiDialogue, triples };
     data.output = JSON.stringify(triples, null, 2);
-    dispatch({ data });
+    dispatch({ data, format:'triples' });
   }, [dispatch]);
 
   useEffect(() => {
     taInput.current.value = data.input;
     taOutput.current.value = data.output;
-  }, [data]);
+  });
 
   return (
-    <div className="App">
+    <div className="App" role="main">
       <div style={{position: 'relative'}}>
-        <Col width="calc(50% - 65px)">
-          <textarea ref={taInput} rows="30" style={{width: '98%'}} />
+        <Col width="calc(50% - 65px)" title="input">
+          <textarea ref={taInput} rows="30"
+						style={taStyle}
+					/>
         </Col>
-        <Col width="120px">
-          <Process title="Triples list" selected />
-          <Process title="State chart" />
-          <Process title="Kumu json" />
+        <Col width="120px" title="options">
+          <Process title="Triples list"
+						onClick={handleTriplesClick}
+						selected={state.format==='triples'}
+          />
+          <Process title="State map"
+						onClick={handleStateMapClick}
+						selected={state.format==='statemap'}
+					/>
+          <Process title="Kumu json"
+						onClick={handleKumuJsonClick}
+						selected={state.format==='kumu'}
+					/>
         </Col>
-        <Col width="calc(50% - 65px)">
-					<textarea rows="30" style={{width: '98%'}}
+        <Col width="calc(50% - 65px)" title="output">
+					<textarea rows="30" style={taStyle}
 						ref={taOutput}
 						readOnly
 					/>
@@ -45,24 +76,30 @@ const App = () => {
       </div>
       <hr />
       <button onClick={doTest}>Test dispatch</button>
-      <Pre data={state} name="State" />
+      <Pre data={state.test2} name="Test" />
+      <Pre data={state.format} name="Format" raw />
     </div>
   );
 }
 
-const Process = ({title, selected}) => {
-  return <button style={{
-    width: '100%',
-    //borderWidth: 3,
-    padding: 0,
-  }} disabled={selected} >
+const Process = ({title, onClick, selected}) => {
+  return <button
+		style={{
+			width: '100%',
+			//borderWidth: 3,
+			padding: 0,
+		}}
+		disabled={selected}
+		onClick={onClick}
+  >
     {title}
   </button>;
 }
 
-const Pre = React.memo(({data, name=''}) => {
+const Pre = React.memo(({data, name='', raw=false}) => {
   // console.log('rendering', name);
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  data = raw ? data : JSON.stringify(data, null, 2);
+  return <pre>{data}</pre>;
 });
 
 const Col = props => {

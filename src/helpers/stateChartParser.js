@@ -2,8 +2,6 @@
 Read in a text-based state-chart spec, and return a set of triples.
 Each triple consists of: {stateFedby, stateFedto, transition }
 */
-//import { cancelTaxiDialogue } from './stateChartDef';
-const { cancelTaxiDialogue } = require('./stateChartDef');
 
 export const asTextArray = defn => {
   return defn.split('\n')
@@ -63,12 +61,34 @@ const addTransitionToStateMap = (txtnName, stateName, stateMap = {}) => {
   return stateMap;
 }
 
-const txt = asTextArray(cancelTaxiDialogue);
-const triples = asTriplesArray(txt);
-const map = asStateMap(triples);
-//parsed results
-export default {
-  txt,
-  triples,
-  map
-};
+export const asKumuJson = triples => {
+	const direction = "directed";
+	const srcMap = {};
+	const tgtMap = {};
+	const json = {
+		elements: [],
+		connections: []
+	}
+	//note node types, add connections
+	triples.forEach(triple => {
+		const {source, target, transition} = triple;
+		srcMap[source] = true;
+		tgtMap[target] = true;
+		json.connections.push({
+			from: source, to: target, label: transition, direction
+		});
+	});
+
+	//second pass add root and node elements
+	Object.keys(srcMap).forEach(src => {
+		const type = tgtMap[src] ? 'node' : 'root';
+		json.elements.push({ label: src, type });
+	});
+	//third pass, catch any leaf elements
+	Object.keys(tgtMap).forEach(tgt => {
+		if (!srcMap[tgt]) {
+			json.elements.push({ label: tgt, type: 'leaf' });
+		};
+	});
+	return json;
+}

@@ -1,3 +1,4 @@
+//STORE
 import React, { createContext, useReducer, useContext } from 'react';
 /*
 Based on design described here:
