@@ -11,13 +11,13 @@ describe('asTextArray', () => {
 
 describe('asTriplesArray', () => {
   it('should return all valid triples', () => {
-		const aTxt = [
-			'state1',
-			' txtnA -> state2',
-			'txtn B->state3',
-			'state2',
-			'txtnc -> state1',
-		];
+    const aTxt = [
+      'state1',
+      ' txtnA -> state2',
+      'txtn B->state3',
+      'state2',
+      'txtnc -> state1',
+    ];
     const triples = asTriplesArray(aTxt);
     expect(triples.length).toBe(3); //three transitions
     triples.forEach(triple => {
@@ -35,12 +35,34 @@ describe('asTriplesArray', () => {
   });
 
   it('should handle single-line defns', () => {
-		const aTxt = [
-			'state1 -> txtnA -> state2',
-			'state1->txtn B->state3',
-			'state2 -> txtnc -> state1',
-		];
+    const aTxt = [
+      'state1 -> txtnA -> state2',
+      'state1->txtn B->state3',
+      'state2 -> txtnc -> state1',
+    ];
     const triples = asTriplesArray(aTxt);
+    expect(triples.length).toBe(3); //three transitions
+    triples.forEach(triple => {
+      expect(triple).toEqual(expect.objectContaining({
+        source: expect.any(String),
+        transition: expect.any(String),
+        target: expect.any(String),
+      }))
+    })
+    expect(triples).toContainEqual({
+      source: 'state1',
+      transition: 'txtn B',
+      target: 'state3'
+    });
+  });
+
+  it('should handle text-string input', () => {
+    const txt = `
+			state1 -> txtnA -> state2
+      state1->txtn B->state3
+      state2 -> txtnc -> state1
+    `;
+    const triples = asTriplesArray(txt);
     expect(triples.length).toBe(3); //three transitions
     triples.forEach(triple => {
       expect(triple).toEqual(expect.objectContaining({
@@ -71,3 +93,17 @@ describe('asStateMap', () => {
     expect(map.state1).toEqual({txtnA: 'state2', 'txtn B': 'state3'});
   });
 });
+
+
+/* Kumu json
+{
+  "elements": [
+    {"label": "A"},
+    {"label": "B"}
+  ],
+  "connections": [
+    {"from": "A", "to": "B"}
+  ]
+}
+ *
+ */

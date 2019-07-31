@@ -1,5 +1,5 @@
 //Cancel dialogue for Taxi Booking screen
-export const cancelTaxiDialogue = `
+const cancelTaxiDialogue = `
 Close
   appOpenAlert -> AlertProviderCancel
   userCancelBooking -> Confirm
@@ -20,3 +20,7 @@ Success
 Error
   userClickClose -> Close
 `;
+
+module.exports = {
+	cancelTaxiDialogue
+};

@@ -2,7 +2,8 @@
 Read in a text-based state-chart spec, and return a set of triples.
 Each triple consists of: {stateFedby, stateFedto, transition }
 */
-import { cancelTaxiDialogue } from './stateChartDef';
+//import { cancelTaxiDialogue } from './stateChartDef';
+const { cancelTaxiDialogue } = require('./stateChartDef');
 
 export const asTextArray = defn => {
   return defn.split('\n')
@@ -12,25 +13,21 @@ export const asTextArray = defn => {
   .map(line => line.trimRight()); //keep left indent for human-readability.
 }
 
+const makeTriple = (source, transition, target) => ({source, transition, target});
+
+
 export const asTriplesArray = aTxt => {
   const triples = [];
   let currentState;
+  aTxt = (typeof aTxt === 'string') ? asTextArray(aTxt) : aTxt;
   aTxt.forEach(line => {
     const [txt1, txt2, txt3] = line.split('->');
     if (txt3) {
-      const triple = {
-        source: txt1.trim(),
-        transition: txt2.trim(),
-        target: txt3.trim(),
-      }
+      const triple = makeTriple(txt1.trim(), txt2.trim(),txt3.trim());
       currentState = triple.source;
       triples.push(triple);
-		} else if (txt2) {
-      const triple = {
-        source: currentState,
-        transition: txt1.trim(),
-        target: txt2.trim(),
-      }
+    } else if (txt2) {
+			const triple = makeTriple(currentState, txt1.trim(), txt2.trim());
       triples.push(triple);
     } else {
       currentState = txt1.trim();
