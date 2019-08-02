@@ -23,10 +23,8 @@ describe('App', () => {
 
 	it('renders default output', () => {
 		const { queryByTitle } = render(<TestApp />);
-		const input = queryByTitle('input');
-		const output = queryByTitle('output');
-		expect(input.children[0].value).toContain('appReset -> Close');
-		expect(output.children[0].value).toContain('"transition": "appReset"');
+		const appMain = queryByTitle('app-main');
+		expect(appMain).toBeTruthy();
 	});
 
 });
