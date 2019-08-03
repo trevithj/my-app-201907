@@ -24,12 +24,13 @@ describe('StateChart', () => {
 		const input = queryByTitle('input');
     const output = queryByTitle('output');
     const options = queryByTitle("options");
+    expect(input).toBeTruthy();
     expect(options).toBeTruthy();
-    expect(input.children[0].value).toContain('userDoClose -> Closing');
-    expect(output.children[0].value).toEqual('undefined');
+    expect(input.children[1].value).toContain('userDoClose -> Closing');
+    expect(output.children[1].value).toEqual('undefined');
 
     fireEvent.click(options.children[2]); //Triples list
-    expect(output.children[0].value).toContain('"transition": "userDoClose"');
+    expect(output.children[1].value).toContain('"transition": "userDoClose"');
 
 	});
 

@@ -24,15 +24,15 @@ Error
 //Automatic door
 const sample = `
 DoorOpened
-	userDoClose -> Closing
+  userDoClose -> Closing
 Closing
   userDoOpen -> Opening
   sensorClosed -> DoorClosed
 DoorClosed
-	userDoOpen -> Opening
+  userDoOpen -> Opening
 Opening
-	userDoClose -> Closing
-	sensorOpened -> DoorOpened
+  userDoClose -> Closing
+  sensorOpened -> DoorOpened
 `;
 
 module.exports = {

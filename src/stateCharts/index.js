@@ -3,11 +3,23 @@ import React, {useRef, useEffect} from 'react';
 import { useStore } from '../store';
 import { sample } from './stateChartDef';
 import * as Parser from './stateChartParser';
+import { Process, Pre, Col, H4 } from './components';
 
 const taStyle = {
-	width: '98%', fontFamily: 'Courier new', fontSize: '12pt'
+	width: '98%',
+	fontFamily: 'Courier new',
+	fontSize: '12pt',
+	fontWeight: 600,
+	color: 'white',
+	backgroundColor: 'black',
+	paddingLeft: '1em'
 };
 
+const menuStyle = {
+	border: 'solid 1px blue',
+	backgroundColor: '#eee',
+	height: '90vh',
+};
 
 const getHandleInputClick = (dispatch) => () => {
   dispatch({format:'input'});
@@ -81,35 +93,39 @@ const StateCharts = () => {
   return (
     <div className="state-charts" title="main">
       <div style={{position: 'relative'}}>
-        <Col width="120px" title="options">
-          <Process title="Input"
-						onClick={handleInputClick}
-						selected={state.format==='input'}
-          />
-          <hr />
-          <Process title="Triples list"
-						onClick={handleTriplesClick}
-						selected={state.format==='triples'}
-          />
-          <Process title="State map"
-						onClick={handleStateMapClick}
-						selected={state.format==='statemap'}
-					/>
-          <Process title="Kumu json"
-						onClick={handleKumuJsonClick}
-						selected={state.format==='kumu'}
-					/>
-          <Process title="XState json"
-						onClick={handleXStateJsonClick}
-						selected={state.format==='xstate'}
-					/>
+        <Col width="160px">
+					<div style={menuStyle} title="options">
+						<Process title="Input"
+							onClick={handleInputClick}
+							selected={state.format==='input'}
+						/>
+						<hr />
+						<Process title="Triples list"
+							onClick={handleTriplesClick}
+							selected={state.format==='triples'}
+						/>
+						<Process title="State map"
+							onClick={handleStateMapClick}
+							selected={state.format==='statemap'}
+						/>
+						<Process title="Kumu json"
+							onClick={handleKumuJsonClick}
+							selected={state.format==='kumu'}
+						/>
+						<Process title="XState json"
+							onClick={handleXStateJsonClick}
+							selected={state.format==='xstate'}
+						/>
+					</div>
         </Col>
-        <Col width="calc(100% - 120px)" show={state.format==='input'} title="input">
+        <Col width="calc(100% - 160px)" show={state.format==='input'} title="input">
+					<H4>INPUT</H4>
           <textarea ref={taInput} rows="30"
 						style={taStyle}
 					/>
         </Col>
-        <Col width="calc(100% - 120px)" show={state.format!=='input'} title="output">
+        <Col width="calc(100% - 160px)" show={state.format!=='input'} title="output">
+					<H4>FORMAT: '{state.format}'</H4>
 					<textarea rows="30" style={taStyle}
 						ref={taOutput}
 						readOnly
@@ -123,39 +139,5 @@ const StateCharts = () => {
     </div>
   );
 }
-
-const Process = ({title, onClick, selected}) => {
-  return <button
-		style={{
-			width: '100%',
-			//borderWidth: 3,
-			padding: 0,
-		}}
-		disabled={selected}
-		onClick={onClick}
-  >
-    {title}
-  </button>;
-}
-
-const Pre = React.memo(({data, name='', raw=false}) => {
-  // console.log('rendering', name);
-  data = raw ? data : JSON.stringify(data, null, 2);
-  return <pre>{data}</pre>;
-});
-
-const Col = props => {
-  const { children, width, show=true, ...rest } = props;
-  const display = show ? 'inline-block' : 'none';
-  return (
-    <div style={{
-      verticalAlign: 'top',
-      display,
-      width
-    }} {...rest}>
-      {props.children}
-    </div>
-  );
-};
 
 export default StateCharts;
