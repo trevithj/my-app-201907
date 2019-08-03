@@ -1,6 +1,7 @@
 import * as SCP from './stateChartParser';
+import { sample } from './stateChartDef';
 
-const { asTextArray, asTriplesArray, asStateMap, asKumuJson } = SCP;
+const { asTextArray, asTriplesArray, asStateMap, asKumuJson, asXStateJson } = SCP;
 
 describe('asTextArray', () => {
   const testDef = `Line One\n   \nLine Two\ntrailing-spaces   \n  indented`;
@@ -99,7 +100,7 @@ describe('asStateMap', () => {
 describe('asKumuJson', () => {
   const makeTriple = (source, transition, target) => ({ source, target, transition});
 
-	it('should', () => {
+	it('should parse into expected format', () => {
 		const triples = [
 			makeTriple('state1', 'txtnA', 'state2'),
 			makeTriple('state1', 'txtn B', 'state3'),
@@ -138,3 +139,62 @@ describe('asKumuJson', () => {
 }
  *
  */
+
+describe('asXStateJson', () => {
+	const triples = asTriplesArray(sample);
+
+	it('should parse into expected format', () => {
+		const json = asXStateJson(triples);
+		expect(json.initial).toEqual(triples[0].source);
+		expect(json.states).toBeTruthy();
+		const states = Object.keys(json.states);
+		expect(states).toContainEqual(json.initial);
+	});
+
+	it('should contain state objects in expected format', () => {
+		const json = asXStateJson(triples);
+		const states = Object.keys(json.states);
+		expect(states).toContainEqual('Closing');
+		const state = json.states.Closing;
+		expect(state.on).toEqual(expect.objectContaining({
+			sensorClosed: "DoorClosed",
+			userDoOpen: "Opening"
+		}));
+	});
+
+	it('should handle empty triples array', () => {
+		const json = asXStateJson([]);
+		expect(json.states).toEqual({});
+		expect(json.initial).toEqual(false);
+	});
+});
+/*
+{
+  "states": {
+    "DoorOpened": {
+      "on": {
+        "userDoClose": "Closing"
+      }
+    },
+    "Closing": {
+      "on": {
+        "sensorClosed": "DoorClosed",
+        "userDoOpen": "Opening"
+      }
+    },
+    "DoorClosed": {
+      "on": {
+        "userDoOpen": "Opening"
+      }
+    },
+    "Opening": {
+      "on": {
+        "sensorOpened": "DoorOpened",
+        "userDoClose": "Closing"
+      }
+    }
+  },
+  "initial": "DoorOpened"
+}
+
+*/

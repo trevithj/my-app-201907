@@ -1,7 +1,7 @@
 //StateCharts
 import React, {useRef, useEffect} from 'react';
 import { useStore } from '../store';
-import { cancelTaxiDialogue } from '../helpers/stateChartDef';
+import { sample } from './stateChartDef';
 import * as Parser from './stateChartParser';
 
 const taStyle = {
@@ -30,6 +30,11 @@ const getHandleKumuJsonClick = (dispatch, data) => () => {
   dispatch({format:'kumu', data});
 };
 
+const getHandleXStateJsonClick = (dispatch, data) => () => {
+  const output = Parser.asXStateJson(data.triples);
+  data.output = JSON.stringify(output, null, 2);
+  dispatch({format:'xstate', data});
+};
 
 const StateCharts = () => {
   const [state, dispatch] = useStore();
@@ -44,14 +49,13 @@ const StateCharts = () => {
   const handleTriplesClick = getHandleTriplesClick(dispatch, data);
   const handleStateMapClick = getHandleStateMapClick(dispatch, data);
   const handleKumuJsonClick = getHandleKumuJsonClick(dispatch, data);
+  const handleXStateJsonClick = getHandleXStateJsonClick(dispatch, data);
 
   useEffect(() => {
-    const txt = Parser.asTextArray(cancelTaxiDialogue);
+    const txt = Parser.asTextArray(sample);
     const triples = Parser.asTriplesArray(txt);
-    const data = { input: cancelTaxiDialogue, triples };
+    const data = { input: sample, triples };
     taInput.current.value = data.input;
-    // data.output = JSON.stringify(triples, null, 2);
-    // taOutput.current.value = data.output;
     dispatch({ data, format:'input' });
   }, [dispatch]);
 
@@ -94,6 +98,10 @@ const StateCharts = () => {
           <Process title="Kumu json"
 						onClick={handleKumuJsonClick}
 						selected={state.format==='kumu'}
+					/>
+          <Process title="XState json"
+						onClick={handleXStateJsonClick}
+						selected={state.format==='xstate'}
 					/>
         </Col>
         <Col width="calc(100% - 120px)" show={state.format==='input'} title="input">

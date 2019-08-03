@@ -1,6 +1,7 @@
 /*
 Read in a text-based state-chart spec, and return a set of triples.
-Each triple consists of: {stateFedby, stateFedto, transition }
+Each triple consists of: { source, target, transition }
+The triples set becomes teh basis for creating other formats.
 */
 
 export const asTextArray = defn => {
@@ -92,3 +93,18 @@ export const asKumuJson = triples => {
 	});
 	return json;
 }
+
+export const asXStateJson = triples => {
+	const states = {};
+	if(triples.length ===0) return { states, initial: false };
+	triples.forEach(({source, transition, target}) => {
+		const map = states[source] || { on: {} };
+		map.on[transition] = target;
+		states[source] = map;
+	});
+	const json = {
+		 initial: triples[0].source,
+		 states,
+	};
+	return json;
+};

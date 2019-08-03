@@ -21,6 +21,21 @@ Error
   userClickClose -> Close
 `;
 
+//Automatic door
+const sample = `
+DoorOpened
+	userDoClose -> Closing
+Closing
+  userDoOpen -> Opening
+  sensorClosed -> DoorClosed
+DoorClosed
+	userDoOpen -> Opening
+Opening
+	userDoClose -> Closing
+	sensorOpened -> DoorOpened
+`;
+
 module.exports = {
-	cancelTaxiDialogue
+	cancelTaxiDialogue,
+	sample,
 };
