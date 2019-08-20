@@ -1,39 +1,32 @@
 //StateCharts
-import React, { useRef, useEffect } from "react";
-import { useStore } from "../store";
-import { sample } from "./stateChartDef";
-import * as Parser from "./stateChartParser";
-import { Pre, Col, H4 } from "./components";
-import LeftMenu from "./leftMenu";
+import React, { useRef, useEffect } from 'react';
+import { useStore } from '../store';
+import { sample } from './stateChartDef';
+import * as Parser from './stateChartParser';
+import { Pre, Col, H4 } from './components';
+import LeftMenu from './leftMenu';
 
 const taStyle = {
-  width: "98%",
-  fontFamily: "Courier new",
-  fontSize: "12pt",
+  width: '98%',
+  fontFamily: 'Courier new',
+  fontSize: '12pt',
   fontWeight: 600,
-  color: "white",
-  backgroundColor: "black",
-  paddingLeft: "1em"
+  color: 'white',
+  backgroundColor: 'black',
+  paddingLeft: '1em'
 };
 
 const StateCharts = () => {
   const [state, dispatch] = useStore();
   const taInput = useRef();
   const taOutput = useRef();
-  const doTest = () =>
-    dispatch({
-      test2: {
-        date: new Date().getTime()
-      }
-    });
   const data = state.data || {};
 
   useEffect(() => {
-    const txt = Parser.asTextArray(sample);
-    const triples = Parser.asTriplesArray(txt);
+    const triples = Parser.asTriplesArray(sample);
     const data = { input: sample, triples };
     taInput.current.value = data.input;
-    dispatch({ data, format: "input" });
+    dispatch({ data, format: 'input' });
   }, [dispatch]);
 
   useEffect(() => {
@@ -41,13 +34,12 @@ const StateCharts = () => {
     const listener = () => {
       const data = {};
       data.input = theInput.value;
-      const txt = Parser.asTextArray(data.input);
-      data.triples = Parser.asTriplesArray(txt);
+      data.triples = Parser.asTriplesArray(data.input);
       dispatch({ data });
     };
-    theInput.addEventListener("blur", listener);
+    theInput.addEventListener('blur', listener);
     return () => {
-      theInput.removeEventListener("blur", listener);
+      theInput.removeEventListener('blur', listener);
     };
   }, [dispatch]);
 
@@ -56,32 +48,31 @@ const StateCharts = () => {
   }, [data.output]);
 
   return (
-    <div className="state-charts" title="main">
-      <div style={{ position: "relative" }}>
-        <Col width="160px">
+    <div className='state-charts' title='main'>
+      <div style={{ position: 'relative' }}>
+        <Col width='160px'>
           <LeftMenu />
         </Col>
         <Col
-          width="calc(100% - 160px)"
-          show={state.format === "input"}
-          title="input"
+          width='calc(100% - 160px)'
+          show={state.format === 'input'}
+          title='input'
         >
           <H4>INPUT</H4>
-          <textarea ref={taInput} rows="30" style={taStyle} />
+          <textarea ref={taInput} rows='30' style={taStyle} />
         </Col>
         <Col
-          width="calc(100% - 160px)"
-          show={state.format !== "input"}
-          title="output"
+          width='calc(100% - 160px)'
+          show={state.format !== 'input'}
+          title='output'
         >
           <H4>FORMAT: '{state.format}'</H4>
-          <textarea rows="30" style={taStyle} ref={taOutput} readOnly />
+          <textarea rows='30' style={taStyle} ref={taOutput} readOnly />
         </Col>
       </div>
       <hr />
-      <button onClick={doTest}>Test dispatch</button>
-      <Pre data={state.format} name="Format" raw />
-      <Pre data={state.data} name="Data" />
+      <Pre data={state.format} name='Format' raw />
+      <Pre data={state.data} name='Data' />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 //Cancel dialogue for Taxi Booking screen
-const cancelTaxiDialogue = `
+exports.cancelTaxiDialogue = `
 Close
   appOpenAlert -> AlertProviderCancel
   userCancelBooking -> Confirm
@@ -22,7 +22,7 @@ Error
 `;
 
 //Automatic door
-const sample = `
+exports.sample = `
 DoorOpened
   userDoClose -> Closing
 Closing
@@ -34,8 +34,3 @@ Opening
   userDoClose -> Closing
   sensorOpened -> DoorOpened
 `;
-
-module.exports = {
-	cancelTaxiDialogue,
-	sample,
-};
